@@ -1,17 +1,22 @@
 from datetime import datetime, timezone
 
-from pydantic import Field, EmailStr
+from pydantic import Field, EmailStr, UUID4
 
 from src.schemas.base_schemas import Base
 
 
 class CreateUserSchema(Base):
-    id: int
-    full_name: str = Field(lt=100)
-    email: EmailStr = Field(lt=120)
+    full_name: str = Field(max_length=100)
+    email: EmailStr = Field(max_length=120)
 
 
 class ResponseUserSchema(Base):
     success: bool
-    user_id: int
-    created_at: datetime = datetime.now(timezone.utc)
+    user_id: UUID4
+
+
+class GetUserSchema(Base):
+    id: UUID4
+    full_name: str
+    email: str
+    created_at: datetime
