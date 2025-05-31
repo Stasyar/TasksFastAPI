@@ -8,13 +8,13 @@ from src.repositories.base_rep import BaseRepository
 
 
 class TaskRepository(BaseRepository[Task]):
-    def __init__(self):
-        super().__init__(Task)
+    def __init__(self, session: AsyncSession):
+        super().__init__(Task, session)
 
-    async def adjust(self, task_id: UUID4, task_data: dict, session: AsyncSession) -> bool:
+    async def adjust(self, task_id: UUID4, task_data: dict) -> bool:
         logger.info("Adjusting task")
         stmt = select(Task).where(Task.id == task_id)
-        result = await session.execute(stmt)
+        result = await self.session.execute(stmt)
         task = result.scalar_one_or_none()
 
         if not task:
@@ -23,8 +23,8 @@ class TaskRepository(BaseRepository[Task]):
         for field, value in task_data.items():
             setattr(task, field, value)
 
-        await session.commit()
-        await session.refresh(task)
+        await self.session.commit()
+        await self.session.refresh(task)
         logger.info("Task adjusted")
         return True
 
