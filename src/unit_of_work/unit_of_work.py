@@ -1,27 +1,74 @@
-from typing import Any
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from abc import ABC, abstractmethod
+from types import TracebackType
+from typing import Any, Never
 
 from src.database.db import async_session_maker
 from src.repositories.tasks_rep import TaskRepository
 from src.repositories.users_rep import UserRepository
 
 
-class UnitOfWork:
-    def __init__(self, session: AsyncSession):
-        self._session = session
+class AbstractUnitOfWork(ABC):
+    is_open: bool
+    user: UserRepository
+    task: TaskRepository
+
+    @abstractmethod
+    def __init__(self) -> Never:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def __aenter__(self) -> Never:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> Never:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def flush(self) -> Never:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def rollback(self) -> Never:
+        raise NotImplementedError
+
+
+class UnitOfWork(AbstractUnitOfWork):
+    """The class responsible for the atomicity of transactions."""
+
+    __slots__ = (
+        "_session",
+        "company",
+        "is_open",
+        "user",
+    )
+
+    def __init__(self) -> None:
+        self.is_open = False
+
+    async def __aenter__(self) -> None:
+        self._session = async_session_maker()
         self.task = TaskRepository(self._session)
         self.user = UserRepository(self._session)
+        self.is_open = True
 
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         if not exc_type:
             await self._session.commit()
         else:
-            await self._session.rollback()
+            await self.rollback()
         await self._session.close()
+        self.is_open = False
 
     async def flush(self) -> None:
         await self._session.flush()
@@ -35,10 +82,8 @@ class UnitOfWork:
     async def session_refresh(self, obj: Any) -> None:
         await self._session.refresh(obj)
 
-    # def __getattr__(self, name: str) -> None:
-    #     err_msg = f"'{self.__class__.__name__}' object has no attribute '{name}'"
-    #     if name in self.__slots__ and not self.is_open:
-    #         err_msg = f"Attempting to access '{name}' with a closed UnitOfWork"
-    #     raise AttributeError(err_msg)
-
-
+    def __getattr__(self, name: str) -> None:
+        err_msg = f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        if name in self.__slots__ and not self.is_open:
+            err_msg = f"Attempting to access '{name}' with a closed UnitOfWork"
+        raise AttributeError(err_msg)

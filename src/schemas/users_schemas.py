@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
-from pydantic import Field, EmailStr, UUID4
+from pydantic import UUID4, EmailStr, Field
 
 from src.schemas.base_schemas import Base
 

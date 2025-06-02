@@ -1,18 +1,17 @@
 import enum
-from datetime import datetime, date
+from datetime import date, datetime
 from uuid import UUID
 
-from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String, Text, text
+from sqlalchemy import Date, DateTime, Enum, ForeignKey, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base, str_100, uuid_pk
-from src.models.users import TaskWatcher, TaskExecutor, User
 
 
 class TaskStatus(enum.Enum):
-    TODO = 'todo'
-    IN_PROGRESS = 'in_progress'
-    DONE = 'done'
+    TODO = "todo"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
 
 
 class Task(Base):
@@ -21,15 +20,32 @@ class Task(Base):
     id: Mapped[uuid_pk]
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    status: Mapped[TaskStatus] = mapped_column(Enum(TaskStatus), default=TaskStatus.TODO)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=text("TIMEZONE('utc', now())"), index=True)
+    status: Mapped[TaskStatus] = mapped_column(
+        Enum(TaskStatus), default=TaskStatus.TODO,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        server_default=text("TIMEZONE('utc', now())"),
+        index=True,
+    )
 
     author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    assignee_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-    column_id: Mapped[UUID] = mapped_column(ForeignKey("columns.id", ondelete="CASCADE"), nullable=True)
-    sprint_id: Mapped[UUID] = mapped_column(ForeignKey("sprints.id", ondelete="CASCADE"), nullable=True)
-    board_id: Mapped[UUID] = mapped_column(ForeignKey("boards.id", ondelete="CASCADE"), nullable=True)
-    group_id: Mapped[UUID] = mapped_column(ForeignKey("groups.id", ondelete="CASCADE"), nullable=True)
+    assignee_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=True,
+    )
+    column_id: Mapped[UUID] = mapped_column(
+        ForeignKey("columns.id", ondelete="CASCADE"), nullable=True,
+    )
+    sprint_id: Mapped[UUID] = mapped_column(
+        ForeignKey("sprints.id", ondelete="CASCADE"), nullable=True,
+    )
+    board_id: Mapped[UUID] = mapped_column(
+        ForeignKey("boards.id", ondelete="CASCADE"), nullable=True,
+    )
+    group_id: Mapped[UUID] = mapped_column(
+        ForeignKey("groups.id", ondelete="CASCADE"), nullable=True,
+    )
 
     author = relationship("User", foreign_keys=[author_id])
     assignee = relationship("User", foreign_keys=[assignee_id])
@@ -38,8 +54,12 @@ class Task(Base):
     board = relationship("Board")
     group = relationship("Group")
 
-    watchers = relationship("User", secondary="task_watchers", back_populates="watched_tasks")
-    executors = relationship("User", secondary="task_executors", back_populates="executed_tasks")
+    watchers = relationship(
+        "User", secondary="task_watchers", back_populates="watched_tasks",
+    )
+    executors = relationship(
+        "User", secondary="task_executors", back_populates="executed_tasks",
+    )
 
 
 class Board(Base):

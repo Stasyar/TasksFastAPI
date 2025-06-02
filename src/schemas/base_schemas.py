@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 
@@ -9,4 +7,4 @@ class Base(BaseModel):
 
 class SuccessSchema(Base):
     success: bool
-    error: Optional[str] = None
+    error: str | None = None

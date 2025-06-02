@@ -1,23 +1,20 @@
-from typing import Annotated
-
-from fastapi import Depends
 from pydantic import UUID4
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.db import get_async_session
-from src.repositories.users_rep import UserRepository
+from src.logger.logger import logger
+from src.models import User
 from src.schemas.users_schemas import CreateUserSchema
-from src.unit_of_work.unit_of_work import UnitOfWork
+from src.services.base_service import BaseService
 
 
-class UserService:
-    def __init__(self, uow: UnitOfWork):
-        self.uow = uow
+class UserService(BaseService):
+    _repo = "user"
 
-    async def get_user(self, user_id: UUID4):
+    async def get_user(self, user_id: UUID4) -> User | None:
         async with self.uow:
-            return await self.uow.user.get(id=user_id)
+            logger.info("Getting user by id")
+            return await self.uow.user.get_by_id_one_or_none(obj_id=user_id)
 
-    async def create_user(self, user_data: CreateUserSchema):
+    async def create_user(self, user_data: CreateUserSchema) -> User:
         async with self.uow:
-            return await self.uow.user.create(obj_in=user_data.model_dump())
+            logger.info("Creating user")
+            return await self.uow.user.add_one_and_get_obj(obj_in=user_data.model_dump())

@@ -1,18 +1,36 @@
 from datetime import datetime
-from typing import Optional
 
-from pydantic import BaseModel, Field, UUID4
+from pydantic import UUID4, BaseModel, Field, field_validator
 
 from src.models.tasks import TaskStatus
 
 
 class Base(BaseModel):
-    pass
+    @field_validator('title', check_fields=False)
+    @classmethod
+    def validate_title_length(cls, value) -> str | None:
+        if len(value) < 3:
+            raise ValueError("Title must be at least 3 characters long")
+        if len(value) > 255:
+            raise ValueError("Title must be no more than 255 characters long")
+        return value
+
+    @field_validator("description", check_fields=False)
+    @classmethod
+    def validate_description_chars(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
+        allowed_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.!?-()")
+        for char in value:
+            if char not in allowed_chars:
+                error_message = f"Invalid character in description: '{char}'"
+                raise ValueError(error_message)
+        return value
 
 
 class CreateTaskSchema(Base):
     title: str = Field(max_length=255)
-    description: Optional[str] = None
+    description: str | None = None
     status: TaskStatus = TaskStatus.TODO
     author_id: UUID4
 
@@ -34,12 +52,12 @@ class GetTaskSchema(Base):
 
 
 class PatchTaskSchema(Base):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[TaskStatus] = None
-    author_id: Optional[UUID4] = None
-    assignee_id: Optional[UUID4] = None
-    column_id: Optional[UUID4] = None
-    sprint_id: Optional[UUID4] = None
-    board_id: Optional[UUID4] = None
-    group_id: Optional[UUID4] = None
+    title: str | None = None
+    description: str | None = None
+    status: TaskStatus | None = None
+    author_id: UUID4 | None = None
+    assignee_id: UUID4 | None = None
+    column_id: UUID4 | None = None
+    sprint_id: UUID4 | None = None
+    board_id: UUID4 | None = None
+    group_id: UUID4 | None = None
