@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import UUID4
+from starlette.status import HTTP_201_CREATED
 
 from src.schemas.users_schemas import (CreateUserSchema, GetUserSchema,
                                        ResponseUserSchema)
@@ -8,7 +9,10 @@ from src.services.users import UserService
 router = APIRouter(prefix="/users")
 
 
-@router.post("/")
+@router.post(
+    path="/",
+    status_code=HTTP_201_CREATED
+)
 async def create_user_api(
     user_data: CreateUserSchema,
     user_service: UserService = Depends(UserService),
@@ -18,7 +22,7 @@ async def create_user_api(
     return ResponseUserSchema(success=True, user_id=new_user.id)
 
 
-@router.get("/{user_id}")
+@router.get(path="/{user_id}")
 async def get_user_api(
     user_id: UUID4,
     user_service: UserService = Depends(UserService),

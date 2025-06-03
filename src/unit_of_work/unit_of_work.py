@@ -43,7 +43,7 @@ class UnitOfWork(AbstractUnitOfWork):
 
     __slots__ = (
         "_session",
-        "company",
+        "task",
         "is_open",
         "user",
     )

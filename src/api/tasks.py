@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import UUID4
+from starlette.status import HTTP_201_CREATED
 
 from src.schemas.base_schemas import SuccessSchema
 from src.schemas.tasks_schema import (CreateTaskSchema, GetTaskSchema,
@@ -9,7 +10,10 @@ from src.services.tasks import TaskService
 router = APIRouter(prefix="/tasks")
 
 
-@router.post("/")
+@router.post(
+    path="/",
+    status_code=HTTP_201_CREATED
+)
 async def create_task_api(
     task_data: CreateTaskSchema,
     task_service: TaskService = Depends(TaskService),
@@ -23,7 +27,7 @@ async def create_task_api(
     )
 
 
-@router.get("/{task_id}")
+@router.get(path="/{task_id}")
 async def get_task_by_id_api(
     task_id: UUID4,
     task_service: TaskService = Depends(TaskService),
@@ -38,7 +42,10 @@ async def get_task_by_id_api(
     )
 
 
-@router.get("/", response_model=list[GetTaskSchema])
+@router.get(
+    path="/",
+    response_model=list[GetTaskSchema]
+)
 async def get_tasks_api(
     task_service: TaskService = Depends(TaskService),
 ) -> list[GetTaskSchema]:
@@ -47,28 +54,20 @@ async def get_tasks_api(
     return tasks
 
 
-@router.delete("/{task_id}")
+@router.delete(path="/{task_id}")
 async def delete_task_api(
     task_id: UUID4,
     task_service: TaskService = Depends(TaskService),
 ) -> SuccessSchema:
 
-    task_deleted = await task_service.delete_by_ids(task_id=task_id)
-
-    if task_deleted:
-        return SuccessSchema(success=True)
-    return SuccessSchema(success=False)
+    return await task_service.delete_by_ids(task_id=task_id)
 
 
-@router.patch("/{task_id}")
+@router.patch(path="/{task_id}")
 async def patch_task_api(
     task_id: UUID4,
     task_data: PatchTaskSchema,
     task_service: TaskService = Depends(TaskService),
 ) -> SuccessSchema:
 
-    task_patched = await task_service.adjust_task(task_id=task_id, task_data=task_data)
-
-    if task_patched:
-        return SuccessSchema(success=True)
-    return SuccessSchema(success=False)
+    return await task_service.adjust_task(task_id=task_id, task_data=task_data)

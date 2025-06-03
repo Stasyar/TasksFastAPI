@@ -7,6 +7,7 @@ from pydantic import UUID4
 from sqlalchemy import delete as sqla_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from starlette.status import HTTP_404_NOT_FOUND
 
 
 class AbstractRepository(ABC):
@@ -42,40 +43,41 @@ ModelType = TypeVar("ModelType")
 
 
 class BaseRepository(AbstractRepository, Generic[ModelType]):
-    def __init__(self, model: type[ModelType], session: AsyncSession) -> None:
-        self.model = model
-        self.session = session
+    _model: ModelType
+
+    def __init__(self, _session: AsyncSession) -> None:
+        self._session = _session
 
     async def add_one_and_get_obj(self, obj_in: dict) -> ModelType:
-        obj = self.model(**obj_in)
-        self.session.add(obj)
+        obj = self._model(**obj_in)
+        self._session.add(obj)
         return obj
 
     async def get_by_id_one_or_none(self, obj_id: int | str | UUID) -> ModelType | None:
-        result = await self.session.execute(
-            select(self.model).where(self.model.id == obj_id),
+        result = await self._session.execute(
+            select(self._model).where(self._model.id == obj_id),
         )
         instance = result.scalar_one_or_none()
         if instance is None:
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} entity not found")
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"{self._model.__name__} entity not found")
         return instance
 
     async def get_all(self) -> list[ModelType]:
-        result = await self.session.execute(select(self.model))
+        result = await self._session.execute(select(self._model))
         return result.scalars().all()
 
     async def delete_by_id(self, obj_id: int | str | UUID) -> int:
-        stmt = sqla_delete(self.model).where(self.model.id == obj_id)
-        result = await self.session.execute(stmt)
+        stmt = sqla_delete(self._model).where(self._model.id == obj_id)
+        result = await self._session.execute(stmt)
         return result.rowcount
 
     async def update_one_by_id(self, obj_id: UUID4, obj_data: dict) -> bool:
-        stmt = select(self.model).where(self.model.id == obj_id)
-        result = await self.session.execute(stmt)
+        stmt = select(self._model).where(self._model.id == obj_id)
+        result = await self._session.execute(stmt)
         instance = result.scalar_one_or_none()
 
         if not instance:
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} entity not found")
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"{self._model.__name__} entity not found")
 
         for field, value in obj_data.items():
             setattr(instance, field, value)
