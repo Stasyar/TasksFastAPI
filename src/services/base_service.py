@@ -68,6 +68,11 @@ class AbstractService(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    async def get_all(self) -> Never:
+        """Get all entries for the given filter, if it exists."""
+        raise NotImplementedError
+
+    @abstractmethod
     async def delete_by_id(self, *args: Any, **kwargs: Any) -> Never:
         """Deletion of entry by passed ID."""
         raise NotImplementedError
@@ -96,11 +101,11 @@ class BaseService(AbstractService):
 
     @transaction_mode
     async def add_one_and_get_obj(self, **kwargs: Any) -> Any:
-        return await self._get_related_repo().add_one_and_get_obj(**kwargs)
+        return await self._get_related_repo().add_one_and_get_obj(kwargs)
 
     @transaction_mode
     async def update_one_by_id(self, obj_id: int | str | UUID, **kwargs: Any) -> Any:
-        return await self._get_related_repo().update_one_by_id(obj_id=obj_id, **kwargs)
+        return await self._get_related_repo().update_one_by_id(obj_id=obj_id, obj_data=kwargs)
 
     @transaction_mode
     async def delete_by_id(self, obj_id: int | str | UUID) -> None:
@@ -109,6 +114,10 @@ class BaseService(AbstractService):
     @transaction_mode
     async def get_by_id_one_or_none(self, obj_id: int | str | UUID) -> Any:
         return await self._get_related_repo().get_by_id_one_or_none(obj_id)
+
+    @transaction_mode
+    async def get_all(self) -> Any:
+        return await self._get_related_repo().get_all()
 
     @staticmethod
     def check_existence(obj: Any, details: str) -> None:

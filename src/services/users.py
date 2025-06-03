@@ -10,11 +10,9 @@ class UserService(BaseService):
     _repo = "user"
 
     async def get_user(self, user_id: UUID4) -> User | None:
-        async with self.uow:
-            logger.info("Getting user by id")
-            return await self.uow.user.get_by_id_one_or_none(obj_id=user_id)
+        logger.info("Getting user by id")
+        return await super().get_by_id_one_or_none(user_id)
 
     async def create_user(self, user_data: CreateUserSchema) -> User:
-        async with self.uow:
-            logger.info("Creating user")
-            return await self.uow.user.add_one_and_get_obj(obj_in=user_data.model_dump())
+        logger.info("Creating user")
+        return await super().add_one_and_get_obj(**user_data.model_dump())
