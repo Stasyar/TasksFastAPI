@@ -1,9 +1,14 @@
+import enum
 from datetime import datetime
 
 from pydantic import UUID4, BaseModel, Field, field_validator
 
-from src.models.tasks import TaskStatus
 
+class TaskStatus(enum.Enum):
+    TODO = "todo"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+    
 
 class Base(BaseModel):
     @field_validator('title', check_fields=False)
