@@ -11,10 +11,12 @@ class TaskWatcher(Base):
     __tablename__ = "task_watchers"
 
     task_id: Mapped[UUID] = mapped_column(
-        ForeignKey("tasks.id", ondelete="CASCADE"), primary_key=True,
+        ForeignKey("tasks.id", ondelete="CASCADE"),
+        primary_key=True,
     )
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
     )
 
 
@@ -22,10 +24,12 @@ class TaskExecutor(Base):
     __tablename__ = "task_executors"
 
     task_id: Mapped[UUID] = mapped_column(
-        ForeignKey("tasks.id", ondelete="CASCADE"), primary_key=True,
+        ForeignKey("tasks.id", ondelete="CASCADE"),
+        primary_key=True,
     )
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
     )
 
 
@@ -36,12 +40,18 @@ class User(Base):
     full_name: Mapped[str_100] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(String(120), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=text("TIMEZONE('utc', now())"),
+        DateTime,
+        nullable=False,
+        server_default=text("TIMEZONE('utc', now())"),
     )
 
     watched_tasks = relationship(
-        "Task", secondary="task_watchers", back_populates="watchers",
+        "Task",
+        secondary="task_watchers",
+        back_populates="watchers",
     )
     executed_tasks = relationship(
-        "Task", secondary="task_executors", back_populates="executors",
+        "Task",
+        secondary="task_executors",
+        back_populates="executors",
     )

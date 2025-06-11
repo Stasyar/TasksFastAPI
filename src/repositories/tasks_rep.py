@@ -6,4 +6,3 @@ from src.repositories.base_rep import BaseRepository
 
 class TaskRepository(BaseRepository[Task]):
     _model = Task
-

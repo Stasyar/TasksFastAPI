@@ -15,7 +15,8 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     status: Mapped[TaskStatus] = mapped_column(
-        Enum(TaskStatus), default=TaskStatus.TODO,
+        Enum(TaskStatus),
+        default=TaskStatus.TODO,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -26,19 +27,24 @@ class Task(Base):
 
     author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     assignee_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=True,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
     )
     column_id: Mapped[UUID] = mapped_column(
-        ForeignKey("columns.id", ondelete="CASCADE"), nullable=True,
+        ForeignKey("columns.id", ondelete="CASCADE"),
+        nullable=True,
     )
     sprint_id: Mapped[UUID] = mapped_column(
-        ForeignKey("sprints.id", ondelete="CASCADE"), nullable=True,
+        ForeignKey("sprints.id", ondelete="CASCADE"),
+        nullable=True,
     )
     board_id: Mapped[UUID] = mapped_column(
-        ForeignKey("boards.id", ondelete="CASCADE"), nullable=True,
+        ForeignKey("boards.id", ondelete="CASCADE"),
+        nullable=True,
     )
     group_id: Mapped[UUID] = mapped_column(
-        ForeignKey("groups.id", ondelete="CASCADE"), nullable=True,
+        ForeignKey("groups.id", ondelete="CASCADE"),
+        nullable=True,
     )
 
     author = relationship("User", foreign_keys=[author_id])
@@ -49,10 +55,14 @@ class Task(Base):
     group = relationship("Group")
 
     watchers = relationship(
-        "User", secondary="task_watchers", back_populates="watched_tasks",
+        "User",
+        secondary="task_watchers",
+        back_populates="watched_tasks",
     )
     executors = relationship(
-        "User", secondary="task_executors", back_populates="executed_tasks",
+        "User",
+        secondary="task_executors",
+        back_populates="executed_tasks",
     )
 
 

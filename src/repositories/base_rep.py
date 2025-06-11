@@ -59,7 +59,10 @@ class BaseRepository(AbstractRepository, Generic[ModelType]):
         )
         instance = result.scalar_one_or_none()
         if instance is None:
-            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"{self._model.__name__} entity not found")
+            raise HTTPException(
+                status_code=HTTP_404_NOT_FOUND,
+                detail=f"{self._model.__name__} entity not found",
+            )
         return instance
 
     async def get_all(self) -> list[ModelType]:
@@ -77,7 +80,10 @@ class BaseRepository(AbstractRepository, Generic[ModelType]):
         instance = result.scalar_one_or_none()
 
         if not instance:
-            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"{self._model.__name__} entity not found")
+            raise HTTPException(
+                status_code=HTTP_404_NOT_FOUND,
+                detail=f"{self._model.__name__} entity not found",
+            )
 
         for field, value in obj_data.items():
             setattr(instance, field, value)

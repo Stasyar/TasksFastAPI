@@ -9,10 +9,7 @@ from src.services.users import UserService
 router = APIRouter(prefix="/users")
 
 
-@router.post(
-    path="/",
-    status_code=HTTP_201_CREATED
-)
+@router.post(path="/", status_code=HTTP_201_CREATED)
 async def create_user_api(
     user_data: CreateUserSchema,
     user_service: UserService = Depends(UserService),

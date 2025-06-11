@@ -22,7 +22,9 @@ def transaction_mode(*, auto_flush: bool) -> Callable[[T], T]: ...
 
 
 def transaction_mode(
-    _func: T | None = None, *, auto_flush: bool = False,
+    _func: T | None = None,
+    *,
+    auto_flush: bool = False,
 ) -> T | Callable[[T], T]:
     """Wraps the function in transaction mode.
     Checks if the UnitOfWork context manager is open.
@@ -105,7 +107,9 @@ class BaseService(AbstractService):
 
     @transaction_mode
     async def update_one_by_id(self, obj_id: int | str | UUID, **kwargs: Any) -> Any:
-        return await self._get_related_repo().update_one_by_id(obj_id=obj_id, obj_data=kwargs)
+        return await self._get_related_repo().update_one_by_id(
+            obj_id=obj_id, obj_data=kwargs
+        )
 
     @transaction_mode
     async def delete_by_id(self, obj_id: int | str | UUID) -> None:

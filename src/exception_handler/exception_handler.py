@@ -9,7 +9,9 @@ def register_exception_handlers(app: FastAPI) -> None:
     logger = logging.getLogger("uvicorn.error")
 
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ):
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
@@ -52,4 +54,3 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": str(exc)},
         )
-

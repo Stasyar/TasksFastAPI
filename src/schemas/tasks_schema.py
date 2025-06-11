@@ -8,10 +8,10 @@ class TaskStatus(enum.Enum):
     TODO = "todo"
     IN_PROGRESS = "in_progress"
     DONE = "done"
-    
+
 
 class Base(BaseModel):
-    @field_validator('title', check_fields=False)
+    @field_validator("title", check_fields=False)
     @classmethod
     def validate_title_length(cls, value) -> str | None:
         if len(value) < 3:
@@ -25,7 +25,9 @@ class Base(BaseModel):
     def validate_description_chars(cls, value: str | None) -> str | None:
         if value is None:
             return value
-        allowed_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.!?-()")
+        allowed_chars = set(
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.!?-()"
+        )
         for char in value:
             if char not in allowed_chars:
                 error_message = f"Invalid character in description: '{char}'"

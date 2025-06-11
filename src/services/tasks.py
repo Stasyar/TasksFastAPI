@@ -2,8 +2,8 @@ from pydantic import UUID4
 
 from src.logger.logger import logger
 from src.models import Task
-from src.schemas.tasks_schema import CreateTaskSchema, PatchTaskSchema
 from src.schemas.base_schemas import SuccessSchema
+from src.schemas.tasks_schema import CreateTaskSchema, PatchTaskSchema
 from src.services.base_service import BaseService
 
 
@@ -27,7 +27,11 @@ class TaskService(BaseService):
         logger.info("Getting all tasks")
         return await super().get_all()
 
-    async def adjust_task(self, task_id: UUID4, task_data: PatchTaskSchema) -> SuccessSchema:
+    async def adjust_task(
+        self, task_id: UUID4, task_data: PatchTaskSchema
+    ) -> SuccessSchema:
         logger.info("Adjusting task by id")
-        updated = await super().update_one_by_id(obj_id=task_id, **task_data.model_dump(exclude_unset=True))
+        updated = await super().update_one_by_id(
+            obj_id=task_id, **task_data.model_dump(exclude_unset=True)
+        )
         return SuccessSchema(success=bool(updated))

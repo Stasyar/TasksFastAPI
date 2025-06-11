@@ -6,7 +6,8 @@ from sqlalchemy.orm import DeclarativeBase, mapped_column
 
 str_100 = Annotated[str, 200]
 uuid_pk = Annotated[
-    uuid4, mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4),
+    uuid4,
+    mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4),
 ]
 
 

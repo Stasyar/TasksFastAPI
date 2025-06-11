@@ -11,9 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 from starlette.status import HTTP_200_OK
 
-
 Check = Callable[[dict[str, Any]], bool]
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class BaseConfig(BaseModel):
@@ -22,7 +21,7 @@ class BaseConfig(BaseModel):
 
 
 class TestDescription(BaseConfig):
-    description: str = ''
+    description: str = ""
 
 
 class TestExpectation(BaseConfig):
@@ -70,5 +69,3 @@ def prepare_payload(response: Response, exclude: Sequence[str] | None = None) ->
             payload.pop(key, None)
 
     return payload
-
-

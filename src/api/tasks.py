@@ -10,10 +10,7 @@ from src.services.tasks import TaskService
 router = APIRouter(prefix="/tasks")
 
 
-@router.post(
-    path="/",
-    status_code=HTTP_201_CREATED
-)
+@router.post(path="/", status_code=HTTP_201_CREATED)
 async def create_task_api(
     task_data: CreateTaskSchema,
     task_service: TaskService = Depends(TaskService),
@@ -42,10 +39,7 @@ async def get_task_by_id_api(
     )
 
 
-@router.get(
-    path="/",
-    response_model=list[GetTaskSchema]
-)
+@router.get(path="/", response_model=list[GetTaskSchema])
 async def get_tasks_api(
     task_service: TaskService = Depends(TaskService),
 ) -> list[GetTaskSchema]:
