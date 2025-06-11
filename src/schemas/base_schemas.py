@@ -7,4 +7,3 @@ class Base(BaseModel):
 
 class SuccessSchema(Base):
     success: bool
-    error: str | None = None

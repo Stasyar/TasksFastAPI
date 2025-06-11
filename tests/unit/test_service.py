@@ -6,11 +6,7 @@ from src.schemas.users_schemas import CreateUserSchema
 from src.services.tasks import TaskService
 from src.services.users import UserService
 from src.models import User, Task
-from tests.test_cases.service import (
-    TEST_USERS_GET_MOCK,
-    TEST_USERS_CREATE_MOCK,
-    TEST_TASKS_CREATE_MOCK, TEST_TASKS_GET_MOCK
-)
+from tests import test_cases
 
 
 @pytest.fixture
@@ -34,7 +30,7 @@ def task_service(mock_uow):
 
 @pytest.mark.parametrize(
     "user_id, full_name, email",
-    TEST_USERS_GET_MOCK
+    test_cases.TEST_USERS_GET_MOCK
 )
 async def test_get_user(user_id, full_name, email, mock_uow, user_service):
     mock_user_obj = User(
@@ -52,7 +48,7 @@ async def test_get_user(user_id, full_name, email, mock_uow, user_service):
 
 @pytest.mark.parametrize(
     "full_name, email",
-    TEST_USERS_CREATE_MOCK
+    test_cases.TEST_USERS_CREATE_MOCK
 )
 async def test_create_user_with_correct_data(full_name, email, user_service, mock_uow):
     data = CreateUserSchema(full_name=full_name, email=email)
@@ -67,7 +63,7 @@ async def test_create_user_with_correct_data(full_name, email, user_service, moc
 
 @pytest.mark.parametrize(
     "task_id, title, description, status",
-    TEST_TASKS_GET_MOCK
+    test_cases.TEST_TASKS_GET_MOCK
 )
 async def test_create_task_with_correct_data(task_id, title, description, status, task_service, mock_uow):
     mock_task = Task(task_id=task_id, title=title, description=description, status=status)
@@ -81,7 +77,7 @@ async def test_create_task_with_correct_data(task_id, title, description, status
 
 @pytest.mark.parametrize(
     "title, description, status, author_id",
-    TEST_TASKS_CREATE_MOCK
+    test_cases.TEST_TASKS_CREATE_MOCK
 )
 async def test_create_task_with_correct_data(title, description, status, author_id, task_service, mock_uow):
     data = CreateTaskSchema(title=title, description=description, status=status, author_id=author_id,)
