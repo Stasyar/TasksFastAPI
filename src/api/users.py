@@ -18,8 +18,7 @@ async def create_user_api(
     user_service: UserService = Depends(UserService),
 ) -> ResponseUserSchema:
 
-    new_user = await user_service.create_user(user_data=user_data)
-    return ResponseUserSchema(success=True, user_id=new_user.id)
+    return await user_service.create_user(user_data=user_data)
 
 
 @router.get(path="/{user_id}")
@@ -28,10 +27,4 @@ async def get_user_api(
     user_service: UserService = Depends(UserService),
 ) -> GetUserSchema:
 
-    user = await user_service.get_user(user_id=user_id)
-    return GetUserSchema(
-        id=user.id,
-        full_name=user.full_name,
-        email=user.email,
-        created_at=user.created_at,
-    )
+    return await user_service.get_user(user_id=user_id)
