@@ -5,6 +5,7 @@ from uuid import UUID
 from fastapi import HTTPException
 from pydantic import UUID4
 from sqlalchemy import delete as sqla_delete
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from starlette.status import HTTP_404_NOT_FOUND
@@ -35,6 +36,16 @@ class AbstractRepository(ABC):
 
     @abstractmethod
     async def delete_by_id(self, *args: Any, **kwargs: Any) -> Never:
+        """Deletion of entry by passed ID."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_executing_tasks_count_by_id(self, *args: Any, **kwargs: Any) -> Never:
+        """Deletion of entry by passed ID."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_viewing_tasks_count_by_id(self, *args: Any, **kwargs: Any) -> Never:
         """Deletion of entry by passed ID."""
         raise NotImplementedError
 
@@ -88,3 +99,17 @@ class BaseRepository(AbstractRepository, Generic[ModelType]):
         for field, value in obj_data.items():
             setattr(instance, field, value)
         return True
+
+    async def get_executing_tasks_count_by_id(self, obj_id: int | str | UUID) -> int:
+        result = await self._session.execute(
+            select(func.count()).where(self._model.assignee_id == obj_id)
+        )
+        count = result.scalar()
+        return count
+
+    async def get_viewing_tasks_count_by_id(self, obj_id: int | str | UUID) -> int:
+        result = await self._session.execute(
+            select(func.count()).where(self._model.viewer_id == obj_id)
+        )
+        count = result.scalar()
+        return count

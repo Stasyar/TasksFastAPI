@@ -2,7 +2,7 @@ import os
 
 from dotenv import find_dotenv, load_dotenv
 
-load_dotenv(find_dotenv(".env"))
+load_dotenv(find_dotenv(".tasks_env"))
 
 
 class Settings:
@@ -13,6 +13,8 @@ class Settings:
     DB_USER: str = os.environ.get("POSTGRES_USER")
     DB_PASS: str = os.environ.get("POSTGRES_PASSWORD")
     DB_NAME: str = os.environ.get("POSTGRES_DB")
+
+    RABBITMQ_URL: str = os.environ.get("RABBITMQ_URL")
 
     DB_URL: str = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@db:{DB_PORT}/{DB_NAME}"
 

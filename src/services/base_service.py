@@ -79,6 +79,17 @@ class AbstractService(ABC):
         """Deletion of entry by passed ID."""
         raise NotImplementedError
 
+    @abstractmethod
+    async def get_executing_tasks_count_by_id(self, *args: Any, **kwargs: Any) -> Never:
+        """Deletion of entry by passed ID."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_viewing_tasks_count_by_id(self, *args: Any, **kwargs: Any) -> Never:
+        """Deletion of entry by passed ID."""
+        raise NotImplementedError
+
+
 
 class BaseService(AbstractService):
     """A basic service for performing standard CRUD operations with the base repository."""
@@ -122,6 +133,14 @@ class BaseService(AbstractService):
     @transaction_mode
     async def get_all(self) -> Any:
         return await self._get_related_repo().get_all()
+
+    @transaction_mode
+    async def get_executing_tasks_count_by_id(self, obj_id: int | str | UUID) -> Any:
+        return await self._get_related_repo().get_executing_tasks_count_by_id(obj_id)
+
+    @transaction_mode
+    async def get_viewing_tasks_count_by_id(self, obj_id: int | str | UUID) -> Any:
+        return await self._get_related_repo().get_viewing_tasks_count_by_id(obj_id)
 
     @staticmethod
     def check_existence(obj: Any, details: str) -> None:

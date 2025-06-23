@@ -4,12 +4,10 @@ from typing import Any, Never
 
 from src.database.db import async_session_maker
 from src.repositories.tasks_rep import TaskRepository
-from src.repositories.users_rep import UserRepository
 
 
 class AbstractUnitOfWork(ABC):
     is_open: bool
-    user: UserRepository
     task: TaskRepository
 
     @abstractmethod
@@ -45,7 +43,6 @@ class UnitOfWork(AbstractUnitOfWork):
         "_session",
         "task",
         "is_open",
-        "user",
     )
 
     def __init__(self) -> None:
@@ -54,7 +51,6 @@ class UnitOfWork(AbstractUnitOfWork):
     async def __aenter__(self) -> None:
         self._session = async_session_maker()
         self.task = TaskRepository(self._session)
-        self.user = UserRepository(self._session)
         self.is_open = True
 
     async def __aexit__(

@@ -25,11 +25,10 @@ class Task(Base):
         index=True,
     )
 
-    author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    assignee_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=True,
-    )
+    author_id: Mapped[UUID] = mapped_column(nullable=False)
+    assignee_id: Mapped[UUID] = mapped_column(nullable=True)
+    viewer_id: Mapped[UUID] = mapped_column(nullable=True)
+
     column_id: Mapped[UUID] = mapped_column(
         ForeignKey("columns.id", ondelete="CASCADE"),
         nullable=True,
@@ -47,23 +46,10 @@ class Task(Base):
         nullable=True,
     )
 
-    author = relationship("User", foreign_keys=[author_id])
-    assignee = relationship("User", foreign_keys=[assignee_id])
     column = relationship("Column")
     sprint = relationship("Sprint")
     board = relationship("Board")
     group = relationship("Group")
-
-    watchers = relationship(
-        "User",
-        secondary="task_watchers",
-        back_populates="watched_tasks",
-    )
-    executors = relationship(
-        "User",
-        secondary="task_executors",
-        back_populates="executed_tasks",
-    )
 
 
 class Board(Base):

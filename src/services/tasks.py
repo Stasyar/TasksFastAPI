@@ -35,3 +35,13 @@ class TaskService(BaseService):
             obj_id=task_id, **task_data.model_dump(exclude_unset=True)
         )
         return SuccessSchema(success=bool(updated))
+
+    async def get_executing_tasks_count_by_id(self, user_id: UUID4) -> SuccessSchema:
+        logger.info("Deleting task by id")
+        await super().get_executing_tasks_count_by_id(user_id)
+        return SuccessSchema(success=True)
+
+    async def get_viewing_tasks_count_by_id(self, user_id: UUID4) -> SuccessSchema:
+        logger.info("Deleting task by id")
+        await super().get_viewing_tasks_count_by_id(user_id)
+        return SuccessSchema(success=True)
