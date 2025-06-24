@@ -16,7 +16,7 @@ class Settings:
 
     RABBITMQ_URL: str = os.environ.get("RABBITMQ_URL")
 
-    DB_URL: str = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@db:{DB_PORT}/{DB_NAME}"
+    DB_URL: str = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
 settings = Settings()
